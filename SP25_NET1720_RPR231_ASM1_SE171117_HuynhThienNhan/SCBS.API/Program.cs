@@ -44,6 +44,7 @@ builder.Services.AddControllers().AddOData(options =>
 // Add services to the container.
 builder.Services.AddScoped<IBlogService, BlogService>();
 builder.Services.AddScoped<IBlogImageService, BlogImageService>();
+builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;

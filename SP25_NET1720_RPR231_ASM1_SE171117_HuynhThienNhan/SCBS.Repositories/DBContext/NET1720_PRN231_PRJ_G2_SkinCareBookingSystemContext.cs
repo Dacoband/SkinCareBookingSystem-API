@@ -17,10 +17,6 @@ public partial class NET1720_PRN231_PRJ_G2_SkinCareBookingSystemContext : DbCont
         : base(options)
     {
     }
-
-    public virtual DbSet<Blog> Blogs { get; set; }
-
-    public virtual DbSet<BlogImage> BlogImages { get; set; }
     public static string GetConnectionString(string connectionStringName)
     {
         var config = new ConfigurationBuilder()
@@ -34,6 +30,12 @@ public partial class NET1720_PRN231_PRJ_G2_SkinCareBookingSystemContext : DbCont
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer(GetConnectionString("DefaultConnection")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+    public virtual DbSet<Blog> Blogs { get; set; }
+
+    public virtual DbSet<BlogImage> BlogImages { get; set; }
+
+    public virtual DbSet<UserAccount> UserAccounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,6 +87,37 @@ public partial class NET1720_PRN231_PRJ_G2_SkinCareBookingSystemContext : DbCont
                 .HasForeignKey(d => d.BlogId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BlogImage__BlogI__73BA3083");
+        });
+
+        modelBuilder.Entity<UserAccount>(entity =>
+        {
+            entity.ToTable("UserAccount");
+
+            entity.Property(e => e.UserAccountId).HasColumnName("UserAccountID");
+            entity.Property(e => e.ApplicationCode).HasMaxLength(50);
+            entity.Property(e => e.CreatedBy).HasMaxLength(50);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(150);
+            entity.Property(e => e.EmployeeCode)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.FullName)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.Phone)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.RequestCode).HasMaxLength(50);
+            entity.Property(e => e.UserName)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

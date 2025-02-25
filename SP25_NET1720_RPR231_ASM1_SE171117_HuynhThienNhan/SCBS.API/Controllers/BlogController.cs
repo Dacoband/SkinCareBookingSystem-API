@@ -35,6 +35,23 @@ namespace SCBS.API.Controllers
         {
             return await _blogService.Search(title, status);
         }
-
+        [HttpPost("create")]
+        [Authorize(Roles = "1,2")]
+        public async Task<int> CreateBlog(Blog blog)
+        {
+           return await _blogService.Create(blog);
+        }
+        [HttpPut("{id}")]
+        [Authorize(Roles = "1,2")]
+        public async Task<int> UpdateBlog(Guid id, Blog blog)
+        {
+            return await _blogService.Update(blog);
+        }
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "1")]
+        public async Task<bool> DeleteBlog(Guid id)
+        {
+            return await _blogService.Delete(id);
+        }
     }
 }
