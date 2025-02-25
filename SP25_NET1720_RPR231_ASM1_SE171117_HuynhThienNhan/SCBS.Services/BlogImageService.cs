@@ -15,9 +15,9 @@ namespace SCBS.Services
         Task<int> Create(BlogImage blogImage);
         Task<int> Update(BlogImage blogImage);
         Task<bool> Delete(Guid id);
-        Task<List<Blog>> Search(Guid blogId);
+        Task<List<BlogImage>> Search(Guid blogId);
     }
-    public class BlogImageService
+    public class BlogImageService : IBlogImageService
     {
         private readonly BlogImageRepository _blogImageRepository;
         public BlogImageService()

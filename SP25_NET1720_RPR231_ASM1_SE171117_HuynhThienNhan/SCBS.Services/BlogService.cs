@@ -37,5 +37,21 @@ namespace SCBS.Services
             }
             return _blogRepository.Remove(blog);
         }
+        public async Task<List<Blog>> GetAllAsync()
+        {
+            return await _blogRepository.GetAllAsync();
+        }
+        public async Task<Blog?> GetByIdAsync(Guid id)
+        {
+            return await _blogRepository.GetByIdAsync(id);
+        }
+        public async Task<List<Blog>> Search(string title, string status)
+        {
+            return await _blogRepository.Search(title, status);
+        }
+        public async Task<int> Update(Blog blog)
+        {
+            return await _blogRepository.UpdateAsync(blog);
+        }
     }
 }

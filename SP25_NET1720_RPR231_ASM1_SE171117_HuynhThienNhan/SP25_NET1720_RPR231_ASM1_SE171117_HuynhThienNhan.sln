@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCBS.Repositories", "SCBS.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCBS.Services", "SCBS.Services\SCBS.Services.csproj", "{CD921D52-EDD4-4AE5-A6D4-BC351D470A84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCBS.API", "SCBS.API\SCBS.API.csproj", "{6E3FC8D2-7F77-444E-8B68-A85583607B7D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CD921D52-EDD4-4AE5-A6D4-BC351D470A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD921D52-EDD4-4AE5-A6D4-BC351D470A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD921D52-EDD4-4AE5-A6D4-BC351D470A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E3FC8D2-7F77-444E-8B68-A85583607B7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E3FC8D2-7F77-444E-8B68-A85583607B7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E3FC8D2-7F77-444E-8B68-A85583607B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E3FC8D2-7F77-444E-8B68-A85583607B7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
