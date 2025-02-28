@@ -1,0 +1,38 @@
+mat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  button[mat-button] {
+    margin: 0 10px;
+    transition: transform 0.2s ease;
+  }
+  
+  button[mat-button]:hover {
+    transform: scale(1.05);
+  }
+  
+  button[mat-button].active {
+    font-weight: bold;
+    border-bottom: 2px solid white;
+  }
+  
+  main {
+    min-height: calc(100vh - 128px); /* Trừ chiều cao header (64px) và footer (64px) */
+    padding: 20px;
+  }
+  
+  footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }

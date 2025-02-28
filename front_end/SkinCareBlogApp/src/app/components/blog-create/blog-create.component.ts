@@ -2,15 +2,27 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 import { BlogService } from '../../services/blog.service';
-import { Blog, BlogImage } from '../../models/blog.model'
+import { Blog, BlogImage } from '../../models/blog.model';
 
 @Component({
   selector: 'app-blog-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule
+  ],
   templateUrl: './blog-create.component.html',
-  styleUrl: './blog-create.component.css'
+  styleUrls: ['./blog-create.component.css']
 })
 export class BlogCreateComponent {
   blogForm: FormGroup;
@@ -23,12 +35,11 @@ export class BlogCreateComponent {
       status: ['', Validators.required],
       imageUrl: ['']
     });
-    
   }
 
   onSubmit(): void {
-    if(this.blogForm.valid){
-      const blog: Blog ={
+    if (this.blogForm.valid) {
+      const blog: Blog = {
         id: '',
         title: this.blogForm.get('title')?.value,
         description: this.blogForm.get('description')?.value,
@@ -38,10 +49,10 @@ export class BlogCreateComponent {
 
       this.blogService.createBlog(blog).subscribe({
         next: (result) => {
-          if(result > 0){
+          if (result > 0) {
             this.router.navigate(['/blog-list']);
           } else {
-            this.errorMessage = 'Failed to create blog. Please try again later.';
+            this.errorMessage = 'Blog creation failed.';
           }
         },
         error: (err) => this.errorMessage = 'Error creating blog: ' + err.message

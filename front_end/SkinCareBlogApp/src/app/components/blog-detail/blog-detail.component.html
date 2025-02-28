@@ -1,1 +1,30 @@
-<p>blog-detail works!</p>
+<div class="blog-detail-container">
+    <h1 mat-dialog-title>Blog Detail</h1>
+  
+    <mat-progress-spinner *ngIf="!blog" mode="indeterminate" diameter="50" class="loading"></mat-progress-spinner>
+  
+    <mat-card *ngIf="blog" class="blog-card mat-elevation-z4">
+      <mat-card-header>
+        <mat-card-title>{{ blog.title }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Id:</strong> {{ blog.id }}</p>
+        <p><strong>Description:</strong> {{ blog.description }}</p>
+        <p><strong>Status:</strong> {{ blog.status }}</p>
+        <p><strong>Created At:</strong> {{ blog.createdAt | date }}</p>
+        <p><strong>Updated At:</strong> {{ blog.updatedAt | date }}</p>
+        <div class="image-gallery">
+          <h3>Images:</h3>
+          <div *ngIf="blog.blogImage && blog.blogImage.length > 0; else noImages">
+            <img *ngFor="let image of blog.blogImage" [src]="image.imageUrl" [alt]="blog.title" class="blog-image" />
+          </div>
+          <ng-template #noImages>
+            <p class="no-images">No images available.</p>
+          </ng-template>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/blog-list">Back to List</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>

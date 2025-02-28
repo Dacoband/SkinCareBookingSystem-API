@@ -1,16 +1,18 @@
-<div class="create-container">
-    <h1 mat-dialog-title>Create New Blog</h1>
+<div class="update-container">
+    <h1 mat-dialog-title>Update Blog</h1>
   
-    <form [formGroup]="blogForm" (ngSubmit)="onSubmit()" class="form-container">
+    <mat-progress-spinner *ngIf="!blog" mode="indeterminate" diameter="50" class="loading"></mat-progress-spinner>
+  
+    <form *ngIf="blog" [formGroup]="blogForm" (ngSubmit)="onSubmit()" class="form-container">
       <mat-form-field appearance="fill">
         <mat-label>Title</mat-label>
-        <input matInput formControlName="title" placeholder="Enter title">
+        <input matInput formControlName="title">
         <mat-error *ngIf="blogForm.get('title')?.hasError('required')">Title is required</mat-error>
       </mat-form-field>
   
       <mat-form-field appearance="fill">
         <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description" placeholder="Enter description"></textarea>
+        <textarea matInput formControlName="description"></textarea>
         <mat-error *ngIf="blogForm.get('description')?.hasError('required')">Description is required</mat-error>
       </mat-form-field>
   
@@ -30,7 +32,7 @@
       </mat-form-field>
   
       <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="blogForm.invalid">Create Blog</button>
+        <button mat-raised-button color="warn" type="submit" [disabled]="blogForm.invalid">Update Blog</button>
         <button mat-raised-button color="accent" routerLink="/blog-list">Back to List</button>
       </div>
   

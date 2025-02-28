@@ -1,5 +1,5 @@
-.blog-detail-container {
-    max-width: 800px;
+.delete-container {
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -29,33 +29,26 @@
     color: #2980b9;
   }
   
-  .image-gallery {
-    margin-top: 20px;
-  }
-  
-  .image-gallery h3 {
-    color: #2c3e50;
+  .warning {
+    color: #e74c3c;
+    font-weight: bold;
   }
   
   .blog-image {
     max-width: 300px;
     border-radius: 5px;
+    margin: 10px 0;
     transition: transform 0.3s ease;
-    margin: 10px;
   }
   
   .blog-image:hover {
     transform: scale(1.05);
   }
   
-  .no-images {
-    color: #7f8c8d;
-    font-style: italic;
-  }
-  
   mat-card-actions {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
   }
   
   button[mat-raised-button] {

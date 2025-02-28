@@ -1,4 +1,4 @@
-.create-container {
+.update-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
@@ -35,4 +35,9 @@
   
   button[mat-raised-button][disabled] {
     opacity: 0.6;
+  }
+  
+  .loading {
+    margin: 20px auto;
+    display: block;
   }
