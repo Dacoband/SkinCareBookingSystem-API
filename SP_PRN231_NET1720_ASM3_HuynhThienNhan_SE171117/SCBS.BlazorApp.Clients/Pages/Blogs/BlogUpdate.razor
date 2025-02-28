@@ -1,0 +1,203 @@
+﻿@page "/Blogs/BlogUpdate/{Id:guid}"
+@using SCBS.BlazorApp.Clients.Models
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<style>
+    .update-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .update-title {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 1.1rem;
+        color: #34495e;
+        margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .submit-button {
+        padding: 10px 20px;
+        background-color: #f1c40f;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .submit-button:hover {
+        background-color: #e67e22;
+    }
+
+    .back-button {
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .back-button:hover {
+        background-color: #2980b9;
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="update-container">
+    <h3 class="update-title">Update Blog</h3>
+
+    @if (blog == null)
+    {
+        <p class="loading"><em>Loading...</em></p>
+    }
+    else
+    {
+        <EditForm Model="@blog" OnValidSubmit="@HandleUpdate">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="title">Title</label>
+                <InputText id="title" @bind-Value="blog.Title" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <InputTextArea id="description" @bind-Value="blog.Description" />
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <InputSelect id="status" @bind-Value="blog.Status">
+                    <option value="">Select status...</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Published">Published</option>
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label for="imageUrl">Image URL (Optional)</label>
+                <InputText id="imageUrl" @bind-Value="imageUrl" placeholder="Enter image URL" />
+            </div>
+
+            <button type="submit" class="submit-button">Update Blog</button>
+            <a href="/Blogs/BlogList" class="back-button">Back to List</a>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="error-message">@errorMessage</p>
+            }
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Blog? blog;
+    private string imageUrl = string.Empty;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blog = await HttpClient.GetFromJsonAsync<Blog>($"https://localhost:7115/api/blog/{Id}");
+        if (blog?.BlogImages != null && blog.BlogImages.Any())
+        {
+            imageUrl = blog.BlogImages.First().ImageUrl; // Hiển thị URL hình ảnh đầu tiên nếu có
+        }
+    }
+
+    private async Task HandleUpdate()
+    {
+        try
+        {
+            // Cập nhật BlogImages nếu có thay đổi URL
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                if (blog.BlogImages == null || !blog.BlogImages.Any())
+                {
+                    blog.BlogImages = new List<BlogImage>
+                    {
+                        new BlogImage { ImageUrl = imageUrl }
+                    };
+                }
+                else
+                {
+                    blog.BlogImages.First().ImageUrl = imageUrl; // Cập nhật URL hình ảnh đầu tiên
+                }
+            }
+
+            blog.UpdatedAt = DateTime.Now; // Cập nhật thời gian chỉnh sửa
+
+            // Gửi yêu cầu PUT tới API
+            var response = await HttpClient.PutAsJsonAsync($"https://localhost:7115/api/blog/{Id}", blog);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<int>();
+                if (result > 0)
+                {
+                    NavigationManager.NavigateTo("/Blogs/BlogList");
+                }
+                else
+                {
+                    errorMessage = "Blog update failed. No records affected.";
+                }
+            }
+            else
+            {
+                errorMessage = $"Failed to update blog. Status code: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}

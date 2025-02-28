@@ -1,0 +1,151 @@
+﻿@page "/Blogs/BlogDelete/{Id:guid}"
+@using SCBS.BlazorApp.Clients.Models
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<style>
+    .delete-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .delete-title {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #e74c3c;
+        padding-bottom: 10px;
+    }
+
+    .blog-info {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #34495e;
+        margin-bottom: 20px;
+    }
+
+        .blog-info strong {
+            color: #2980b9;
+        }
+
+    .delete-button {
+        padding: 10px 20px;
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+
+    .back-button {
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 1rem;
+        margin-top: 10px;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="delete-container">
+    <h3 class="delete-title">Delete Blog</h3>
+
+    @if (blog == null)
+    {
+        <p class="loading"><em>Loading...</em></p>
+    }
+    else
+    {
+        <div>
+            <p class="blog-info">Are you sure you want to delete this blog?</p>
+            <div class="blog-info">
+                <p><strong>Title:</strong> @blog.Title</p>
+                <p><strong>Description:</strong> @blog.Description</p>
+                <p><strong>Status:</strong> @blog.Status</p>
+                @if (blog.BlogImages != null && blog.BlogImages.Any())
+                {
+                    <p><strong>Image:</strong></p>
+                    <img src="@blog.BlogImages.First().ImageUrl" alt="@blog.Title" style="max-width: 300px;" />
+                }
+            </div>
+
+            <button @onclick="HandleDelete" class="delete-button">Delete Blog</button>
+            <a href="/Blogs/BlogList" class="back-button">Back to List</a>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <p class="error-message">@errorMessage</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Blog? blog;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blog = await HttpClient.GetFromJsonAsync<Blog>($"https://localhost:7115/api/blog/{Id}");
+    }
+
+    private async Task HandleDelete()
+    {
+        try
+        {
+            // Gửi yêu cầu DELETE tới API
+            var response = await HttpClient.DeleteAsync($"https://localhost:7115/api/blog/{Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                if (result)
+                {
+                    NavigationManager.NavigateTo("/Blogs/BlogList");
+                }
+                else
+                {
+                    errorMessage = "Blog deletion failed.";
+                }
+            }
+            else
+            {
+                errorMessage = $"Failed to delete blog. Status code: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+}

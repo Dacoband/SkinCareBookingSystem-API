@@ -1,0 +1,126 @@
+﻿@page "/Blogs/BlogDetail/{Id:guid}"
+@using SCBS.BlazorApp.Clients.Models;
+@inject HttpClient HttpClient
+
+<style>
+    .blog-detail-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-title {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    .blog-info {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #34495e;
+    }
+
+    .blog-info strong {
+        color: #2980b9;
+    }
+
+    .image-gallery {
+        margin-top: 20px;
+    }
+
+    .image-gallery h5 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .blog-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        transition: transform 0.3s ease;
+    }
+
+    .blog-image:hover {
+        transform: scale(1.05);
+    }
+
+    .no-images {
+        color: #7f8c8d;
+        font-style: italic;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #2980b9;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="blog-detail-container">
+    <h3 class="blog-title">Blog Detail</h3>
+
+    @if (blog == null)
+    {
+        <p class="loading"><em>Loading...</em></p>
+    }
+    else
+    {
+        <div>
+            <h4 class="blog-title">@blog.Title</h4>
+            <p class="blog-info"><strong>Id:</strong> @blog.Id</p>
+            <p class="blog-info"><strong>Description:</strong> @blog.Description</p>
+            <p class="blog-info"><strong>Status:</strong> @blog.Status</p>
+            <p class="blog-info"><strong>Created At:</strong> @blog.CreatedAt</p>
+            <p class="blog-info"><strong>Updated At:</strong> @blog.UpdatedAt</p>
+            <div class="image-gallery">
+                <h5>Images</h5>
+                @if (blog.BlogImages != null && blog.BlogImages.Any())
+                {
+                    @foreach (var image in blog.BlogImages)
+                    {
+                        <img src="@image.ImageUrl" alt="@blog.Title" class="blog-image" />
+                    }
+                }
+                else
+                {
+                    <p class="no-images">No images available.</p>
+                }
+            </div>
+            <a href="/Blogs/BlogList" class="back-button">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Blog? blog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blog = await HttpClient.GetFromJsonAsync<Blog>($"https://localhost:7115/api/blog/{Id}");
+    }
+}

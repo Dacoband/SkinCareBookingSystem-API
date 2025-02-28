@@ -1,0 +1,150 @@
+﻿@page "/Blogs/BlogList"
+@using SCBS.BlazorApp.Clients.Models
+@inject HttpClient httpClient
+
+<style>
+    .blog-list-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .blog-title {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+
+    .create-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #2ecc71;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+        .create-button:hover {
+            background-color: #27ae60;
+        }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .table tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+    .action-button {
+        padding: 8px 16px;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-right: 10px;
+        display: inline-block;
+    }
+
+    .update-button {
+        background-color: #f1c40f;
+    }
+
+        .update-button:hover {
+            background-color: #e67e22;
+        }
+
+    .delete-button {
+        background-color: #e74c3c;
+    }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+
+    .loading {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #7f8c8d;
+    }
+</style>
+
+<div class="blog-list-container">
+    <h3 class="blog-title">Blog List</h3>
+
+    <a href="/Blogs/BlogCreate" class="create-button">Create New Blog</a>
+
+    @if (blogs == null)
+    {
+        <p class="loading"><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var blog in blogs)
+                {
+                    <tr @onclick="() => NavigateToBlogDetail(blog.Id)">
+                        <td>@blog.Title</td>
+                        <td>@blog.Description</td>
+                        <td>@blog.Status</td>
+                        <td>
+                            @foreach (var image in blog.BlogImages)
+                            {
+                                <img src="@image.ImageUrl" alt="" style="max-width: 100px;" />
+                            }
+                        </td>
+                        <td>
+                            <a href="/Blogs/BlogUpdate/@blog.Id" class="action-button update-button">Update</a>
+                            <a href="/Blogs/BlogDelete/@blog.Id" class="action-button delete-button">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<Blog>? blogs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blogs = await httpClient.GetFromJsonAsync<List<Blog>>("https://localhost:7115/api/blog");
+    }
+
+    private void NavigateToBlogDetail(Guid id)
+    {
+        NavigationManager.NavigateTo($"/Blogs/BlogDetail/{id}");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+}
