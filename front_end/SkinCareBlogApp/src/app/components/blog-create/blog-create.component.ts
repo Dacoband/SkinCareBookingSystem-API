@@ -38,25 +38,39 @@ export class BlogCreateComponent {
   }
 
   onSubmit(): void {
-    if (this.blogForm.valid) {
-      const blog: Blog = {
-        id: '',
-        title: this.blogForm.get('title')?.value,
-        description: this.blogForm.get('description')?.value,
-        status: this.blogForm.get('status')?.value,
-        blogImage: this.blogForm.get('imageUrl')?.value ? [{ imageUrl: this.blogForm.get('imageUrl')?.value } as BlogImage] : []
-      };
-
-      this.blogService.createBlog(blog).subscribe({
-        next: (result) => {
-          if (result > 0) {
-            this.router.navigate(['/blog-list']);
-          } else {
-            this.errorMessage = 'Blog creation failed.';
-          }
-        },
-        error: (err) => this.errorMessage = 'Error creating blog: ' + err.message
-      });
+    if (this.blogForm.invalid) {
+      this.errorMessage = 'Please fill out all required fields.';
+      return;
     }
+
+    const blog: Partial<Blog> = {
+      title: this.blogForm.get('title')?.value,
+      description: this.blogForm.get('description')?.value,
+      status: this.blogForm.get('status')?.value,
+      blogImage: this.blogForm.get('imageUrl')?.value ? [{
+        id: '', // API sẽ sinh nếu cần
+        blogId: '', // API sẽ sinh nếu cần
+        imageUrl: this.blogForm.get('imageUrl')?.value,
+        createdAt: undefined,
+        updatedAt: undefined
+      }] : undefined
+    };
+
+    console.log('Data sent to API:', blog);
+
+    this.blogService.createBlog(blog as Blog).subscribe({
+      next: (result) => {
+        if (result > 0) {
+          this.router.navigate(['/blog-list']);
+        } else {
+          this.errorMessage = 'Blog creation failed.';
+        }
+      },
+      error: (err) => {
+        const errorDetail = err.error?.message || err.error?.title || JSON.stringify(err.error);
+        this.errorMessage = `Error creating blog: ${err.status} - ${errorDetail}`;
+        console.error('Full error:', err);
+      }
+    });
   }
 }
