@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using SCBS.MVCWebApp.Models;
 
-namespace SCBS.MVCWebApp.Controllers
+namespace ComesticStore.MVCWebApp.Controllers
 {
-    public class AccountController : Controller
+    public class SystemAccountController : Controller
     {
-        private string APIEndPoint = "https://localhost:7294/api/";
+        private string APIEndPoint = "https://localhost:7155/api/";
         public IActionResult Index()
         {
             return RedirectToAction("Login");
@@ -26,7 +26,7 @@ namespace SCBS.MVCWebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "UserAccount/Login", login))
+                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "SystemAccount/Login", login))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -37,23 +37,23 @@ namespace SCBS.MVCWebApp.Controllers
 
                             if (jwtToken != null)
                             {
-                                var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                                var email = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                                 var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
                                 var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, userName),
+                            new Claim(ClaimTypes.Name, email),
                             new Claim(ClaimTypes.Role, role),
                         };
 
                                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
-                                Response.Cookies.Append("UserName", userName);
+                                Response.Cookies.Append("Email", email);
                                 Response.Cookies.Append("Role", role);
                                 Response.Cookies.Append("TokenString", tokenString);
 
-                                return RedirectToAction("Index", "Blog");
+                                return RedirectToAction("Index", "ComesticInformation");
                             }
                         }
                     }
@@ -70,14 +70,13 @@ namespace SCBS.MVCWebApp.Controllers
         }
         public async Task<IActionResult> Logout()
         {
-            //Do log out
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            //Delete cookies
-            Response.Cookies.Delete("UserName");
+
+            Response.Cookies.Delete("Email");
             Response.Cookies.Delete("Role");
             Response.Cookies.Delete("TokenString");
 
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "SystemAccount");
         }
 
         public async Task<IActionResult> Forbidden()

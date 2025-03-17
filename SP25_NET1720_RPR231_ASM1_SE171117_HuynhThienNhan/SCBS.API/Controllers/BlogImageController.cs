@@ -11,7 +11,7 @@ namespace SCBS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     [EnableQuery]
     public class BlogImageController : ControllerBase
     {

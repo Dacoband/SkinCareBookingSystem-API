@@ -87,5 +87,9 @@ namespace SCBS.MVCWebApp.Controllers
             }
             return blogImages;
         }
+        public async Task<IActionResult> BlogList()
+        {
+            return View();
+        }
     }
 }

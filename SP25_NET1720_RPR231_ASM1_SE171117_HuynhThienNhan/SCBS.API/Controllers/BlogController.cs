@@ -53,5 +53,6 @@ namespace SCBS.API.Controllers
         {
             return await _blogService.Delete(id);
         }
+
     }
 }
