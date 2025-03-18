@@ -29,7 +29,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "CosmeticInformation"))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -60,7 +60,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 var filter = $"$filter=contains(CosmeticName, '{cosmeticName}') and contains(CosmeticSize, '{cosmeticSize}') and contains(SkinType, '{skinType}')";
                 var groupBy = "$apply=groupby((CosmeticName, CosmeticSize, SkinType))";
-                var odataQuery = $"{OdataEndPoint}CosmeticInformation?{filter}&{groupBy}";
+                var odataQuery = $"{OdataEndPoint}ComesticInformation?{filter}&{groupBy}";
 
                 using (var response = await httpClient.GetAsync(odataQuery))
                 {
@@ -104,7 +104,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "CosmeticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -132,7 +132,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "CosmeticCategory"))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticCategory"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -169,7 +169,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                     #endregion
 
-                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "CosmeticInformation", cosmeticInformation))
+                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "ComesticInformation", cosmeticInformation))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -205,7 +205,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "CosmeticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -276,7 +276,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "CosmeticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -306,7 +306,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.DeleteAsync(APIEndPoint + "CosmeticInformation/" + id))
+                using (var response = await httpClient.DeleteAsync(APIEndPoint + "ComesticInformation/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
