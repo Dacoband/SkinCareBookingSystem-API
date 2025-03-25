@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ComesticStore.Repositories.DBContext;
-using ComesticStore.Repositories.Models;
 using Newtonsoft.Json;
+using WCP.Repositories.DBContext;
+using WCP.Repositories.Models;
 
-namespace ComesticStore.MVCWebApp.Controllers
+namespace WCP.WebClient.Controllers
 {
-    public class ComesticInformationController : Controller
+    public class WatercolorsPaintingController : Controller
     {
-        private string APIEndPoint = "https://localhost:7155/api/";
-        private string OdataEndPoint = "https://localhost:7155/odata/";
+        private string APIEndPoint = "https://localhost:7276/api/";
+        private string OdataEndPoint = "https://localhost:7276/odata/";
 
-        // GET: ComesticInformation
+        // GET: WatercolorsPainting
         public async Task<IActionResult> Index()
         {
             using (var httpClient = new HttpClient())
@@ -29,12 +30,12 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation"))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "WatercolorsPainting"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<List<CosmeticInformation>>(content);
+                        var result = JsonConvert.DeserializeObject<List<WatercolorsPainting>>(content);
 
                         if (result != null)
                         {
@@ -43,10 +44,11 @@ namespace ComesticStore.MVCWebApp.Controllers
                     }
                 }
             }
-            return View(new List<CosmeticInformation>());
+            return View(new List<WatercolorsPainting>());
         }
 
-        public async Task<IActionResult> Search(string? cosmeticName, string? cosmeticSize, string? skinType)
+
+        public async Task<IActionResult> Search(string? paintingAuthor, int? publishYear)
         {
             using (var httpClient = new HttpClient())
             {
@@ -58,9 +60,9 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                var filter = $"$filter=contains(CosmeticName, '{cosmeticName}') and contains(CosmeticSize, '{cosmeticSize}') and contains(SkinType, '{skinType}')";
-                var groupBy = "$apply=groupby((CosmeticName, CosmeticSize, SkinType))";
-                var odataQuery = $"{OdataEndPoint}ComesticInformation?{filter}&{groupBy}";
+                var filter = $"$filter=contains(PaintingAuthor, '{paintingAuthor}') and contains(PublishYear, '{publishYear}')";
+                //var groupBy = "$apply=groupby((CosmeticName, CosmeticSize)";
+                var odataQuery = $"{OdataEndPoint}ComesticInformation?{filter}";
 
                 using (var response = await httpClient.GetAsync(odataQuery))
                 {
@@ -68,7 +70,7 @@ namespace ComesticStore.MVCWebApp.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
 
-                        var result = JsonConvert.DeserializeObject<ODataResponse<CosmeticInformation>>(content);
+                        var result = JsonConvert.DeserializeObject<ODataResponse<WatercolorsPainting>>(content);
 
                         if (result != null)
                         {
@@ -77,7 +79,7 @@ namespace ComesticStore.MVCWebApp.Controllers
                     }
                 }
             }
-            return View("Index", new List<CosmeticInformation>());
+            return View("Index", new List<WatercolorsPainting>());
         }
 
         public class ODataResponse<T>
@@ -86,7 +88,7 @@ namespace ComesticStore.MVCWebApp.Controllers
             public List<T> Value { get; set; }
         }
 
-        // GET: ComesticInformation/Details/5
+        // GET: WatercolorsPainting/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -104,12 +106,12 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "WatercolorsPainting/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<CosmeticInformation>(content);
+                        var result = JsonConvert.DeserializeObject<WatercolorsPainting>(content);
                         if (result != null)
                         {
                             return View(result);
@@ -120,9 +122,9 @@ namespace ComesticStore.MVCWebApp.Controllers
             return NotFound();
         }
 
-        private async Task<List<CosmeticCategory>> GetCategorys()
+        private async Task<List<Style>> GetStyles()
         {
-            var Categorys = new List<CosmeticCategory>();
+            var Styles = new List<Style>();
             using (var httpClient = new HttpClient())
             {
                 #region Add Token to header of Request
@@ -132,31 +134,31 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticCategory"))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "WatercolorsPainting/styles"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        Categorys = JsonConvert.DeserializeObject<List<CosmeticCategory>>(content);
+                        Styles = JsonConvert.DeserializeObject<List<Style>>(content);
                     }
                 }
             }
-            return Categorys;
+            return Styles;
         }
 
-        // GET: ComesticInformation/Create
+        // GET: WatercolorsPainting/Create
         public async Task<IActionResult> Create()
         {
-            ViewData["CategoryId"] = new SelectList(await GetCategorys(), "CategoryId", "CategoryName");
+            ViewData["StyleId"] = new SelectList(await GetStyles(), "StyleId", "StyleName");
             return View();
         }
 
-        // POST: ComesticInformation/Create
+        // POST: WatercolorsPainting/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CosmeticId,CosmeticName,SkinType,ExpirationDate,CosmeticSize,DollarPrice,CategoryId")] CosmeticInformation cosmeticInformation)
+        public async Task<IActionResult> Create([Bind("PaintingId,PaintingName,PaintingDescription,PaintingAuthor,Price,PublishYear,CreatedDate,StyleId")] WatercolorsPainting watercolorsPainting)
         {
             if (ModelState.IsValid)
             {
@@ -169,7 +171,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                     #endregion
 
-                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "ComesticInformation", cosmeticInformation))
+                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "WatercolorsPainting", watercolorsPainting))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -183,11 +185,11 @@ namespace ComesticStore.MVCWebApp.Controllers
                     }
                 }
             }
-            ViewData["CategoryId"] = new SelectList(await GetCategorys(), "CategoryId", "CategoryName", cosmeticInformation.CategoryId);
-            return View(cosmeticInformation);
+            ViewData["StyleId"] = new SelectList(await GetStyles(), "StyleId", "StyleName", watercolorsPainting.StyleId);
+            return View(watercolorsPainting);
         }
 
-        // GET: ComesticInformation/Edit/5
+        // GET: WatercolorsPainting/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -195,7 +197,7 @@ namespace ComesticStore.MVCWebApp.Controllers
                 return NotFound();
             }
 
-            var Categorys = await GetCategorys();
+            var Categorys = await GetStyles();
             using (var httpClient = new HttpClient())
             {
                 #region Add Token to header of Request
@@ -205,15 +207,15 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "WatercolorsPainting/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<CosmeticInformation>(content);
+                        var result = JsonConvert.DeserializeObject<WatercolorsPainting>(content);
                         if (result != null)
                         {
-                            ViewData["CategoryId"] = new SelectList(Categorys, "CategoryId", "CategoryName", result.CategoryId);
+                            ViewData["StyleId"] = new SelectList(Categorys, "StyleId", "StyleName", result.StyleId);
                             return View(result);
                         }
                     }
@@ -222,13 +224,15 @@ namespace ComesticStore.MVCWebApp.Controllers
             return NotFound();
         }
 
-        // POST: ComesticInformation/Edit/5
+        // POST: WatercolorsPainting/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("CosmeticId,CosmeticName,SkinType,ExpirationDate,CosmeticSize,DollarPrice,CategoryId")] CosmeticInformation cosmeticInformation)
+        public async Task<IActionResult> Edit(string id, [Bind("PaintingId,PaintingName,PaintingDescription,PaintingAuthor,Price,PublishYear,CreatedDate,StyleId")] WatercolorsPainting watercolorsPainting)
         {
+          
+
             if (ModelState.IsValid)
             {
                 using (var httpClient = new HttpClient())
@@ -240,7 +244,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                     #endregion
 
-                    using (var response = await httpClient.PutAsJsonAsync(APIEndPoint + "ComesticInformation/" + id, cosmeticInformation))
+                    using (var response = await httpClient.PutAsJsonAsync(APIEndPoint + "WatercolorsPainting/" + id, watercolorsPainting))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -254,11 +258,11 @@ namespace ComesticStore.MVCWebApp.Controllers
                     }
                 }
             }
-            ViewData["CategoryId"] = new SelectList(await GetCategorys(), "CategoryId", "CategoryName", cosmeticInformation.CategoryId);
-            return View(cosmeticInformation);
+            ViewData["StyleId"] = new SelectList(await GetStyles(), "StyleId", "StyleId", watercolorsPainting.StyleId);
+            return View(watercolorsPainting);
         }
 
-        // GET: ComesticInformation/Delete/5
+        // GET: WatercolorsPainting/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -276,12 +280,12 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.GetAsync(APIEndPoint + "ComesticInformation/" + id))
+                using (var response = await httpClient.GetAsync(APIEndPoint + "WatercolorsPainting/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<CosmeticInformation>(content);
+                        var result = JsonConvert.DeserializeObject<WatercolorsPainting>(content);
                         if (result != null)
                         {
                             return View(result);
@@ -292,7 +296,7 @@ namespace ComesticStore.MVCWebApp.Controllers
             return NotFound();
         }
 
-        // POST: ComesticInformation/Delete/5
+        // POST: WatercolorsPainting/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -306,7 +310,7 @@ namespace ComesticStore.MVCWebApp.Controllers
 
                 #endregion
 
-                using (var response = await httpClient.DeleteAsync(APIEndPoint + "ComesticInformation/" + id))
+                using (var response = await httpClient.DeleteAsync(APIEndPoint + "WatercolorsPainting/" + id))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -317,6 +321,6 @@ namespace ComesticStore.MVCWebApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
     }
+    
 }

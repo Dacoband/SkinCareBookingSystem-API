@@ -1,0 +1,28 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/Blog",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7179
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/Blog",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/BlogImages",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7242
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/BlogImages",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+    }
+  ]
+}
